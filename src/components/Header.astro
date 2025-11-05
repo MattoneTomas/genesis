@@ -1,18 +1,88 @@
 ---
+// He añadido SVGs para los iconos de Menú y Cierre (X)
+// ya que el proyecto no tiene Astro React configurado para usar `lucide-react`.
+
+const menuIcon = `
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6">
+  <line x1="3" y1="12" x2="21" y2="12"></line>
+  <line x1="3" y1="6" x2="21" y2="6"></line>
+  <line x1="3" y1="18" x2="21" y2="18"></line>
+</svg>
+`;
+
+const xIcon = `
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6">
+  <line x1="18" y1="6" x2="6" y2="18"></line>
+  <line x1="6" y1="6" x2="18" y2="18"></line>
+</svg>
+`;
 ---
 
 <header class="sticky top-0 z-50 bg-white shadow-md">
   <div class="container flex items-center justify-between py-4">
     <div class="text-2xl font-bold text-wine">GENESIS</div>
+
     <nav class="hidden md:flex gap-8 items-center text-sm">
       <a href="#servicios" class="hover:text-olive">Servicios</a>
       <a href="#experiencias" class="hover:text-olive">Experiencias</a>
       <a href="#alojamiento" class="hover:text-olive">Alojamiento</a>
       <a href="#contacto" class="hover:text-olive">Contacto</a>
     </nav>
-    <button class="btn btn-primary text-sm">Reservar</button>
+
+    <button class="btn btn-primary text-sm hidden md:block">Reservar</button>
+
+    <button id="mobile-menu-toggle" class="md:hidden p-2 text-wine" aria-label="Abrir menú">
+      <span id="menu-icon" set:html={menuIcon} />
+      <span id="x-icon" class="hidden" set:html={xIcon} />
+    </button>
+  </div>
+
+  <div id="mobile-menu" class="hidden md:hidden bg-white shadow-md border-t border-gray-200">
+    <nav class="flex flex-col p-4 space-y-2">
+      <a href="#servicios" class="hover:text-olive block p-2 rounded-md">Servicios</a>
+      <a href="#experiencias" class="hover:text-olive block p-2 rounded-md">Experiencias</a>
+      <a href="#alojamiento" class="hover:text-olive block p-2 rounded-md">Alojamiento</a>
+      <a href="#contacto" class="hover:text-olive block p-2 rounded-md">Contacto</a>
+      <button class="btn btn-primary text-sm w-full mt-2">Reservar</button>
+    </nav>
   </div>
 </header>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const toggleButton = document.getElementById('mobile-menu-toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const menuIcon = document.getElementById('menu-icon');
+    const xIcon = document.getElementById('x-icon');
+
+    if (toggleButton && mobileMenu && menuIcon && xIcon) {
+      toggleButton.addEventListener('click', () => {
+        // Alterna la visibilidad del menú
+        mobileMenu.classList.toggle('hidden');
+        
+        // Alterna los iconos
+        menuIcon.classList.toggle('hidden');
+        xIcon.classList.toggle('hidden');
+        
+        // Actualiza el aria-label para accesibilidad
+        const isExpanded = !mobileMenu.classList.contains('hidden');
+        toggleButton.setAttribute('aria-expanded', String(isExpanded));
+        toggleButton.setAttribute('aria-label', isExpanded ? 'Cerrar menú' : 'Abrir menú');
+      });
+
+      // Opcional: Cierra el menú al hacer clic en un enlace
+      mobileMenu.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+          mobileMenu.classList.add('hidden');
+          menuIcon.classList.remove('hidden');
+          xIcon.classList.add('hidden');
+          toggleButton.setAttribute('aria-expanded', 'false');
+          toggleButton.setAttribute('aria-label', 'Abrir menú');
+        });
+      });
+    }
+  });
+</script>
 
 <style>
   .wine { color: var(--wine); }
